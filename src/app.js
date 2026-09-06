@@ -18,7 +18,8 @@ const app = express()
 app.use(cors({
     origin: [
       process.env.FRONTEND_URL,
-      process.env.LOCAL_FRONTEND_URL
+      process.env.LOCAL_FRONTEND_URL,
+      process.env.SDC_DOMAIN
     ],
     credentials: true
 }));
