@@ -7,6 +7,7 @@ import { getPaginatedProjects } from "../services/projectService.js";
 import { getPaginatedEvents } from "../services/eventService.js";
 import { getPaginatedBlogs } from "../services/blogService.js";
 import { addApplicationData } from "../services/applicationService.js";
+import { getSortedAlumni } from "../services/alumniService.js";
 import Setting from "../models/settingSchema.js";
 import errorClass from "../utils/errorClass.js";
 
@@ -230,6 +231,31 @@ export const getPublicRegistrationStatus = async (req, res, next) => {
             500,
             'Unable To Fetch Registration Status',
             `fetch registration status failed`,
+            error
+        );
+
+        next(err);
+    }
+};
+
+export const getAlumni = async (req, res, next) => {
+    try {
+        const page = req.query.page ? Number(req.query.page) : null;
+        const limit = req.query.limit ? Number(req.query.limit) : null;
+
+        const result = await getSortedAlumni(page, limit);
+
+        if (!result.success) {
+            return next(result.error);
+        }
+
+        res.status(200).json(result);
+    } catch (error) {
+        const err = new errorClass(
+            false,
+            500,
+            'Unable To Fetch Alumni',
+            'user fetch Alumni failed',
             error
         );
 

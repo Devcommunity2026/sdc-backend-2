@@ -20,6 +20,10 @@ import {
     editMentor,
     editApplication,
 
+    addAlumni,
+    removeAlumni,
+    editAlumni,
+
     addBlog,
     deleteBlog,
     editBlog
@@ -104,6 +108,13 @@ router.post(
     imageParser.single('image'),
     editMentor
 );
+
+
+// ================= ALUMNI =================
+
+router.post('/addAlumni', addAlumni);
+router.post('/removeAlumni', removeAlumni);
+router.post('/editAlumni', editAlumni);
 
 
 // ================= BLOG =================

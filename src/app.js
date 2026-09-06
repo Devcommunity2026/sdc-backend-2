@@ -9,6 +9,7 @@ import apiAdminRoute from './routes/apiAdmin.js'
 import editRoute from './routes/editContent.js'
 import modRoute from './routes/moderatorContent.js'
 import publicRoute from './routes/public.js'
+import alumniRoute from './routes/alumni.js'
 import bodyParser from 'body-parser'
 
 const app = express()
@@ -39,6 +40,7 @@ app.use('/api/admin', apiAdminRoute) // api admin route
 app.use('/edit', editRoute) // edit content only moderator and admin can do that 
 app.use('/mod', modRoute) // get details of the Admin/Moderator Page
 app.use('/public', publicRoute) // get details of the Admin/Moderator Page
+app.use('/alumni', alumniRoute) // alumni route
 
 
 // middleware which will handel Errors
