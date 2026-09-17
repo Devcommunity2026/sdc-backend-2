@@ -25,6 +25,13 @@ export const sendCareerOtp = async (req, res, next) => {
 
         const cleanEmail = email.toLowerCase().trim();
 
+        if (!cleanEmail.endsWith("@medicaps.ac.in")) {
+            return res.status(400).json({
+                success: false,
+                message: "Only @medicaps.ac.in college email addresses are eligible to apply"
+            });
+        }
+
         // Check if registration is open globally
         const setting = await Setting.findOne({ key: "registrationOpen" });
         if (setting && setting.value === false) {
@@ -95,6 +102,13 @@ export const resendCareerOtp = async (req, res, next) => {
         }
 
         const cleanEmail = email.toLowerCase().trim();
+
+        if (!cleanEmail.endsWith("@medicaps.ac.in")) {
+            return res.status(400).json({
+                success: false,
+                message: "Only @medicaps.ac.in college email addresses are eligible to apply"
+            });
+        }
 
         // Check if registration is open globally
         const setting = await Setting.findOne({ key: "registrationOpen" });
@@ -322,6 +336,12 @@ export const submitCareerApplication = async (req, res, next) => {
         }
 
         const cleanEmail = email?.toLowerCase().trim();
+        if (!cleanEmail || !cleanEmail.endsWith("@medicaps.ac.in")) {
+            return res.status(400).json({
+                success: false,
+                message: "Only @medicaps.ac.in college email addresses are eligible to apply"
+            });
+        }
         if (decoded.email !== cleanEmail) {
             return res.status(401).json({
                 success: false,
@@ -342,8 +362,10 @@ export const submitCareerApplication = async (req, res, next) => {
         tokenEntry.used = true;
         store.verifiedCareerTokens.delete(verificationToken);
 
+        const finalCollege = (college && college.trim()) ? college.trim() : "Medicaps University";
+
         // Validate required fields
-        if (!name || !email || !phone || !college || !branch || !year || !skills || !domain || !motivation || !resume) {
+        if (!name || !email || !phone || !branch || !year || !skills || !domain || !motivation || !resume) {
             return res.status(400).json({
                 success: false,
                 message: "All required fields must be completed"
@@ -367,7 +389,7 @@ export const submitCareerApplication = async (req, res, next) => {
             name: name.trim(),
             email: cleanEmail,
             phone: phone.trim(),
-            college: college.trim(),
+            college: finalCollege,
             branch: branch.trim(),
             year: String(year),
             skills: formattedSkills,

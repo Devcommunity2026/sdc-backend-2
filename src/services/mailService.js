@@ -43,7 +43,7 @@ const getOtpEmailHtml = (otp, isResetFlow) => {
 
                     <tr><td style="border-top:1px solid #eee; padding-top:16px;">
                         <p style="margin:0; font-size:12px; color:#aaa;">If you did not request this, please ignore this email.</p>
-                        <p style="margin:8px 0 0; font-size:12px; color:#aaa;">&copy; ${new Date().getFullYear()} SDC Web</p>
+                        <p style="margin:8px 0 0; font-size:12px; color:#aaa;">&copy; ${new Date().getFullYear()} SDC - Software Developer Community</p>
                     </td></tr>
 
                 </table>
@@ -163,7 +163,7 @@ export const sendCareerOtpEmail = async (email, name, otp) => {
                         <p style="margin:0; font-size:13px; color:#888;">This OTP is valid for 5 minutes. If you did not apply for a position at SDC, please ignore this email.</p>
                     </td></tr>
                     <tr><td style="border-top:1px solid #eee; padding-top:16px;">
-                        <p style="margin:0; font-size:12px; color:#aaa;">&copy; ${new Date().getFullYear()} SDC - Software Development Cell</p>
+                        <p style="margin:0; font-size:12px; color:#aaa;">&copy; ${new Date().getFullYear()} SDC - Software Developer Community</p>
                     </td></tr>
                 </table>
             </td></tr>
