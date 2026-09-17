@@ -36,7 +36,7 @@ import {
     editBlogData
 } from "../services/blogService.js";
 
-import { updateApplication } from '../services/applicationService.js'
+import { updateApplication, removeApplicationData } from '../services/applicationService.js'
 
 // ================= ADD EVENT =================
 
@@ -320,6 +320,23 @@ export const editApplication = async (req, res, next) => {
         next(err);
     }
 }
+
+export const removeApplication = async (req, res, next) => {
+    try {
+        const id = req.body?.id || req.body?.applicationId || req.query?.id;
+        return await removeApplicationData(id, req, res, next);
+    } catch (error) {
+        const err = new errorClass(
+            false,
+            500,
+            "Unable To Remove Application",
+            `userId:${req.details?.userId} remove application failed`,
+            error
+        );
+
+        next(err);
+    }
+};
 
 // ================= ADD BLOG =================
 

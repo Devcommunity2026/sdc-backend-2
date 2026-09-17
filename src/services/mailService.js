@@ -126,3 +126,59 @@ export const sendOtp = async (otpStore, email, password, name, res, next, change
         return next(errObj);
     }
 };
+
+/**
+ * Sends a career application verification OTP via Nodemailer.
+ *
+ * @param {string} email - Applicant email address
+ * @param {string} name  - Applicant name
+ * @param {string|number} otp - 6-digit OTP
+ */
+export const sendCareerOtpEmail = async (email, name, otp) => {
+    logger.info(`[Career OTP] Sending verification email | To: ${email}`);
+    const subject = 'Career Application OTP Verification - SDC';
+    const textBody = `Hello ${name || 'Applicant'},\n\nYour OTP for verifying your career application is: ${otp}.\n\nThis OTP is valid for 5 minutes. Please do not share it with anyone.\n\nBest regards,\nSDC Recruitment Team`;
+
+    const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <body style="margin:0; padding:0; background-color:#f9f9f9; font-family:Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+            <tr><td align="center">
+                <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff; border:1px solid #e0e0e0; border-radius:8px; padding:32px;">
+                    <tr><td style="padding-bottom:16px;">
+                        <h2 style="margin:0; font-size:20px; color:#222;">Career Application Verification</h2>
+                    </td></tr>
+                    <tr><td style="padding-bottom:16px;">
+                        <p style="margin:0; font-size:14px; color:#555; line-height:1.6;">Hello ${name || 'Applicant'},</p>
+                        <p style="margin:8px 0 0; font-size:14px; color:#555; line-height:1.6;">Thank you for your interest in joining SDC. Please use the following One-Time Password (OTP) to verify your email address and complete your application:</p>
+                    </td></tr>
+                    <tr><td align="center" style="padding:20px 0;">
+                        <div style="display:inline-block; background:#f4f4f5; border-radius:8px; padding:12px 24px; font-size:32px; font-weight:bold; color:#111; letter-spacing:4px;">
+                            ${otp}
+                        </div>
+                    </td></tr>
+                    <tr><td style="padding-bottom:20px;">
+                        <p style="margin:0; font-size:13px; color:#888;">This OTP is valid for 5 minutes. If you did not apply for a position at SDC, please ignore this email.</p>
+                    </td></tr>
+                    <tr><td style="border-top:1px solid #eee; padding-top:16px;">
+                        <p style="margin:0; font-size:12px; color:#aaa;">&copy; ${new Date().getFullYear()} SDC - Software Development Cell</p>
+                    </td></tr>
+                </table>
+            </td></tr>
+        </table>
+    </body>
+    </html>
+    `;
+
+    const mailOptions = {
+        from: `SDC Recruitment Team <${FROM_EMAIL}>`,
+        to: email,
+        subject,
+        text: textBody,
+        html,
+    };
+
+    return await transporter.sendMail(mailOptions);
+};

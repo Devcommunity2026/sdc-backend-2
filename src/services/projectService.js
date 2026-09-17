@@ -14,7 +14,8 @@ export const addProjectData = async (data, req, res, next) => {
             message: 'Project Added Successfully'
         });
 
-        logger.info(`userId:${req.details.userId} | added project ${data.name}`);
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[ADDITION] Project "${data.name}" added by ${operator} | Project ID: ${Project._id}`);
 
     } catch (error) {
 
@@ -40,7 +41,8 @@ export const deleteProjectData = async (id, req, res, next) => {
             message: 'Project Deleted Successfully'
         });
 
-        logger.info(`userId:${req.details.userId} | removed project ${id}`);
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[DELETION] Project ${id} removed by ${operator}`);
 
     } catch (error) {
 

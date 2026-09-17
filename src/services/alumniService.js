@@ -19,8 +19,9 @@ export const addAlumniData = async (
             data: newAlumni
         });
 
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details?.userId || 'unknown'} | added alumni ${data.name}`
+            `[ADDITION] Alumni "${data.name}" (${data.company}, ${data.passingYear}) added by ${operator} | Alumni ID: ${newAlumni._id}`
         );
     } catch (error) {
         const err = new errorClass(
@@ -56,8 +57,9 @@ export const removeAlumniData = async (
             message: "Alumni Removed Successfully"
         });
 
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details?.userId || 'unknown'} | removed alumni ${id}`
+            `[DELETION] Alumni "${deleted.name}" (${deleted.company}) (ID: ${id}) removed by ${operator}`
         );
     } catch (error) {
         const err = new errorClass(
@@ -95,8 +97,9 @@ export const updateAlumniData = async (
             data: updated
         });
 
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details?.userId || 'unknown'} | updated alumni ${id}`
+            `[UPDATE] Alumni "${updated.name}" (ID: ${id}) updated by ${operator}`
         );
     } catch (error) {
         const err = new errorClass(

@@ -10,9 +10,10 @@ export const addBlogData = async (data, req, res, next) => {
             success: true,
             message: 'Blog Added Successfully'
         })
-        logger.info(`userId:${req.details.userId} | added the ${data.title} blog`)
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[ADDITION] Blog "${data.title}" added by ${operator} | Blog ID: ${blog._id}`)
     } catch (error) {
-        const err = new errorClass(false, 500, 'Unable To Add Blog', `userId:${req.details.userId} add Blog data to db failed`, error)
+        const err = new errorClass(false, 500, 'Unable To Add Blog', `userId:${req.details?.userId} add Blog data to db failed`, error)
         next(err)
     }
 }
@@ -24,9 +25,10 @@ export const deleteBlogData = async (id, req, res, next) => {
             success: true,
             message: 'Blog deleted Successfully'
         })
-        logger.info(`userId:${req.details.userId} | removed the blog of id ${id} `)
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[DELETION] Blog ${id} removed by ${operator}`)
     } catch (error) {
-        const err = new errorClass(false, 500, 'Unable To Delete Blog', `userId:${req.details.userId} Delete Blog data From db failed`, error)
+        const err = new errorClass(false, 500, 'Unable To Delete Blog', `userId:${req.details?.userId} Delete Blog data From db failed`, error)
         next(err)
     }
 }
@@ -50,9 +52,10 @@ export const editBlogData = async (id, data, req, res, next) => {
             message: 'Blog Updated Successfully',
             data: blog
         })
-        logger.info(`userId:${req.details.userId} | updated the blog of id ${id}`)
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[UPDATE] Blog ${id} updated by ${operator}`)
     } catch (error) {
-        const err = new errorClass(false, 500, 'Unable To Edit Blog', `userId:${req.details.userId} Edit Blog data in db failed`, error)
+        const err = new errorClass(false, 500, 'Unable To Edit Blog', `userId:${req.details?.userId} Edit Blog data in db failed`, error)
         next(err)
     }
 }

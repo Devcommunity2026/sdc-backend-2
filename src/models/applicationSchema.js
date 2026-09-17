@@ -63,6 +63,18 @@ const applicationSchema = new mongoose.Schema(
       trim: true,
     },
 
+    resumePublicId: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    position: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     domain: {
       type: String,
       enum: [
@@ -81,10 +93,28 @@ const applicationSchema = new mongoose.Schema(
       trim: true,
     },
 
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    verifiedAt: {
+      type: Date,
+      default: null,
+    },
+
     status: {
       type: String,
-      enum: ["Applied", "On Hold", "Selected", "Rejected"],
-      default: "Applied",
+      enum: [
+        "Applied",
+        "On Hold",
+        "Selected",
+        "Rejected",
+        "ON_HOLD",
+        "SELECTED",
+        "REJECTED",
+      ],
+      default: "ON_HOLD",
     },
   },
   {
