@@ -73,9 +73,10 @@ export const editRole = async (req, res, next) => {
             message: 'User Role Updated'
         })
 
-        logger.info(`userId:${req.details.userId} | Edited the role of ${email} to ${role}`)
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[ROLE CHANGE] Role of user "${email}" updated to "${role}" by ${operator}`);
     } catch (error) {
-        const err = new errorClass(false, 500, 'Something went wrong', `userId:${req.details.userId} role edit failed`, error)
+        const err = new errorClass(false, 500, 'Something went wrong', `userId:${req.details?.userId} role edit failed`, error)
         next(err)
     }
 }
@@ -94,7 +95,7 @@ export const banEdit = async (req, res, next) => {
             });
         }
         if (email === process.env.OWNER_EMAIL) {
-            logger.info(`userId:${req.details.userId} | Try to Ban the  owner`)
+            logger.info(`userId:${req.details?.userId} | Try to Ban the owner`)
             return res.status(400).json({
                 success: false,
                 message: "something went wrong"
@@ -120,9 +121,10 @@ export const banEdit = async (req, res, next) => {
             message: `Ban of user is ${operation}ed`
         })
 
-        logger.info(`userId:${req.details.userId} |  ${operation}ed ban of ${email}`)
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[STATUS UPDATE] User "${email}" ${operation === "add" ? "BANNED" : "UNBANNED"} by ${operator}`);
     } catch (error) {
-        const err = new errorClass(false, 500, 'Something went wrong', `userId:${req.details.userId} Ban edit failed`, error)
+        const err = new errorClass(false, 500, 'Something went wrong', `userId:${req.details?.userId} Ban edit failed`, error)
         next(err)
     }
 }
@@ -139,7 +141,7 @@ export const deleteUser = async (req, res, next) => {
         }
 
         if (req.details.email !== process.env.OWNER_EMAIL) {
-            logger.info(`userId:${req.details.userId} | Unauthorized attempt to delete user (not owner)`)
+            logger.info(`userId:${req.details?.userId} | Unauthorized attempt to delete user (not owner)`)
             return res.status(403).json({
                 success: false,
                 message: "Only the owner is authorized to delete user accounts"
@@ -147,7 +149,7 @@ export const deleteUser = async (req, res, next) => {
         }
 
         if (email === process.env.OWNER_EMAIL) {
-            logger.info(`userId:${req.details.userId} | Tried to delete the owner account`)
+            logger.info(`userId:${req.details?.userId} | Tried to delete the owner account`)
             return res.status(400).json({
                 success: false,
                 message: "You are not allowed to delete the owner account"
@@ -168,9 +170,10 @@ export const deleteUser = async (req, res, next) => {
             message: "User deleted successfully"
         })
 
-        logger.info(`userId:${req.details.userId} | Deleted user ${email} (userId:${deletedUser.userId})`)
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[DELETION] User account "${email}" (userId: ${deletedUser.userId}) permanently deleted by ${operator}`);
     } catch (error) {
-        const err = new errorClass(false, 500, 'Something went wrong', `userId:${req.details.userId} Delete user failed`, error)
+        const err = new errorClass(false, 500, 'Something went wrong', `userId:${req.details?.userId} Delete user failed`, error)
         next(err)
     }
 }

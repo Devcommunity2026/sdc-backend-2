@@ -1,6 +1,7 @@
 import express from 'express'
 import roleMiddleware from '../middlewares/roleMiddleware.js'
 import { getAccess, editRole, banEdit, deleteUser, getSortedUsers } from '../controllers/adminController.js'
+import { getAuditLogs } from '../controllers/careerAdminController.js'
 
 const router = express.Router()
 
@@ -12,5 +13,6 @@ router.get('/getAccess', getAccess)
 router.post('/editRole', editRole)
 router.post('/banEdit', banEdit)
 router.post('/deleteUser', deleteUser)
+router.get('/logs', getAuditLogs)
 
 export default router

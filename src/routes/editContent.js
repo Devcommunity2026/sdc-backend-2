@@ -19,6 +19,7 @@ import {
     removeMentor,
     editMentor,
     editApplication,
+    removeApplication,
 
     addAlumni,
     removeAlumni,
@@ -133,5 +134,6 @@ router.post(
 );
 
 
-router.post('/application', editApplication)
+router.post('/application', editApplication);
+router.post('/removeApplication', removeApplication);
 export default router;

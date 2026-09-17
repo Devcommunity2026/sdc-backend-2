@@ -23,8 +23,9 @@ export const addMentorData = async (
             message: "Mentor Added Successfully"
         });
 
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details.userId} | added mentor ${data.name}`
+            `[ADDITION] Mentor "${data.name}" added by ${operator} | Mentor ID: ${Mentor._id}`
         );
 
     } catch (error) {
@@ -33,7 +34,7 @@ export const addMentorData = async (
             false,
             500,
             "Unable To Add Mentor",
-            `userId:${req.details.userId} add mentor failed`,
+            `userId:${req.details?.userId} add mentor failed`,
             error
         );
 
@@ -60,8 +61,9 @@ export const removeMentorData = async (
             message: "Mentor Removed Successfully"
         });
 
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details.userId} | removed mentor ${id}`
+            `[DELETION] Mentor ${id} removed by ${operator}`
         );
 
     } catch (error) {
@@ -70,7 +72,7 @@ export const removeMentorData = async (
             false,
             500,
             "Unable To Remove Mentor",
-            `userId:${req.details.userId} remove mentor failed`,
+            `userId:${req.details?.userId} remove mentor failed`,
             error
         );
 
@@ -127,15 +129,16 @@ export const updateMentorData = async (id, data, req, res, next) => {
             success: true,
             message: "Mentor Updated Successfully"
         });
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details.userId} | updated mentor ${id}`
+            `[UPDATE] Mentor ${id} updated by ${operator}`
         );
     } catch (error) {
         const err = new errorClass(
             false,
             500,
             "Unable To Edit Mentor",
-            `userId:${req.details.userId} edit mentor failed`,
+            `userId:${req.details?.userId} edit mentor failed`,
             error
         );
         next(err);

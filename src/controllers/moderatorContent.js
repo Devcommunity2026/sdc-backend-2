@@ -234,7 +234,20 @@ export const getApplication = async (req, res, next) => {
 
         const queryObject = {};
 
-        queryObject.status = status;
+        if (status && status !== "All" && status !== "ALL" && status !== "All Applications") {
+            const upper = status.toUpperCase().replace(/\s+/g, "_");
+            if (upper === "ON_HOLD") {
+                queryObject.status = { $in: ["ON_HOLD", "On Hold"] };
+            } else if (upper === "SELECTED") {
+                queryObject.status = { $in: ["SELECTED", "Selected"] };
+            } else if (upper === "REJECTED") {
+                queryObject.status = { $in: ["REJECTED", "Rejected"] };
+            } else if (upper === "APPLIED") {
+                queryObject.status = { $in: ["Applied", "ON_HOLD", "On Hold"] };
+            } else {
+                queryObject.status = status;
+            }
+        }
 
         if (domain !== "All") {
             queryObject.domain = domain;

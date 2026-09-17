@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import Application from "../models/applicationSchema.js";
+import cloudinary from "../config/cloudConfig.js";
 import logger from "../config/logger.js";
 import errorClass from "../utils/errorClass.js";
 
@@ -37,7 +39,7 @@ export const addApplicationData = async (data) => {
         await application.save();
 
         logger.info(
-            `Application submitted by ${data.email}`
+            `[ADDITION] Application submitted by ${data.email} | Name: ${data.name} | Domain: ${data.domain} | ID: ${application._id}`
         );
 
         return {
@@ -72,16 +74,49 @@ export const removeApplicationData = async (
 ) => {
 
     try {
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Valid Application ID is required"
+            });
+        }
 
-        await Application.findOneAndDelete({ _id: id });
+        const appToDelete = await Application.findById(id);
+        if (!appToDelete) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found"
+            });
+        }
+
+        let publicId = appToDelete.resumePublicId;
+        if (!publicId && appToDelete.resume && typeof appToDelete.resume === "string" && appToDelete.resume.includes("cloudinary.com")) {
+            const match = appToDelete.resume.match(/(?:image|raw)\/upload\/(?:v\d+\/)?(resume\/[^.?#]+)/);
+            if (match && match[1]) {
+                publicId = match[1];
+            }
+        }
+
+        if (publicId) {
+            try {
+                await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+                await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+            } catch (cloudErr) {
+                logger.warn(`[Career Application] Could not clean up Cloudinary asset ${publicId}:`, cloudErr);
+            }
+        }
+
+        await Application.findByIdAndDelete(id);
 
         res.status(200).json({
             success: true,
-            message: "Application Removed Successfully"
+            message: "Application Removed Successfully",
+            id
         });
 
+        const operator = req?.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req?.details?.userId || 'unknown'}`;
         logger.info(
-            `Application removed ${id}`
+            `[DELETION] Application ${id} (${appToDelete.name} | ${appToDelete.email}) removed by ${operator}`
         );
 
     } catch (error) {
@@ -131,7 +166,7 @@ export const getPaginatedApplications = async (page = 1, limit = 10, queryObject
             .limit(limit);
 
         const totalApplications =
-            await Application.countDocuments();
+            await Application.countDocuments(queryObject);
 
         const totalPages = Math.ceil(
             totalApplications / limit
@@ -202,10 +237,12 @@ export const updateApplication = async (
 ) => {
 
     try {
+        const upper = status ? status.toUpperCase().replace(/\s+/g, "_") : "ON_HOLD";
+        const finalStatus = ["ON_HOLD", "SELECTED", "REJECTED"].includes(upper) ? upper : status;
 
         const application = await Application.findOneAndUpdate(
             { _id: id },
-            { $set: { status } },
+            { $set: { status: finalStatus } },
             { new: true }
         );
 
@@ -223,8 +260,9 @@ export const updateApplication = async (
             data: application
         });
 
+        const operator = req?.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req?.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details.userId} | updated application ${id}`
+            `[STATUS UPDATE] Application ${id} (${application.name} | ${application.email}) status updated to ${finalStatus} by ${operator}`
         );
 
     } catch (error) {

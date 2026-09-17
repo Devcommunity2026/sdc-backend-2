@@ -33,8 +33,9 @@ export const addCoreTeamMemberData = async (
             message: "Core Team Member Added Successfully"
         });
 
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details.userId} | added core team member ${data.name}`
+            `[ADDITION] Core team member "${data.name}" (${data.post}) added by ${operator} | Member ID: ${TeamMember._id}`
         );
 
     } catch (error) {
@@ -43,7 +44,7 @@ export const addCoreTeamMemberData = async (
             false,
             500,
             "Unable To Add Core Team Member",
-            `userId:${req.details.userId} add core team member failed`,
+            `userId:${req.details?.userId} add core team member failed`,
             error
         );
 
@@ -70,8 +71,9 @@ export const removeCoreTeamMemberData = async (
             message: "Core Team Member Removed Successfully"
         });
 
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details.userId} | removed core team member ${id}`
+            `[DELETION] Core team member ${id} removed by ${operator}`
         );
 
     } catch (error) {
@@ -80,7 +82,7 @@ export const removeCoreTeamMemberData = async (
             false,
             500,
             "Unable To Remove Core Team Member",
-            `userId:${req.details.userId} remove core team member failed`,
+            `userId:${req.details?.userId} remove core team member failed`,
             error
         );
 
@@ -124,15 +126,16 @@ export const updateCoreTeamMemberData = async (id, data, req, res, next) => {
             success: true,
             message: "Core Team Member Updated Successfully"
         });
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
         logger.info(
-            `userId:${req.details.userId} | updated core team member ${id}`
+            `[UPDATE] Core team member ${id} updated by ${operator}`
         );
     } catch (error) {
         const err = new errorClass(
             false,
             500,
             "Unable To Edit Core Team Member",
-            `userId:${req.details.userId} edit core team member failed`,
+            `userId:${req.details?.userId} edit core team member failed`,
             error
         );
         next(err);

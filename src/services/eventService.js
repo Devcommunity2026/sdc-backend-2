@@ -10,7 +10,8 @@ export const addEventData = async (data, req, res, next) => {
             success: true,
             message: 'Event Added Successfully'
         })
-        logger.info(`userId:${req.details.userId} | added the ${data.name} event`)
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[ADDITION] Event "${data.name}" added by ${operator} | Event ID: ${Event._id}`)
     } catch (error) {
         const err = new errorClass(false, 500, 'Unable To Add Event', `userId:${req.details.userId} add Event data to db failed`, error)
         next(err)
@@ -23,7 +24,8 @@ export const deleteEventData = async (id, req, res, next) => {
             success: true,
             message: 'Event deleted Successfully'
         })
-        logger.info(`userId:${req.details.userId} | removed the event of id ${id} `)
+        const operator = req.details?.email ? `${req.details.email} (role: ${req.details.role || 'unknown'}, id: ${req.details.userId || req.details._id})` : `userId:${req.details?.userId || 'unknown'}`;
+        logger.info(`[DELETION] Event ${id} removed by ${operator}`)
     } catch (error) {
         const err = new errorClass(false, 500, 'Unable To Delete Event', `userId:${req.details.userId} Delete Event data From db failed`, error)
         next(err)
