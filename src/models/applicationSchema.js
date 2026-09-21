@@ -82,6 +82,8 @@ const applicationSchema = new mongoose.Schema(
         "AI / Machine Learning",
         "Cybersecurity",
         "Mobile App Development",
+        "HR",
+        "Graphics",
       ],
       required: true,
       trim: true,
