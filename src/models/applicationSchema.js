@@ -57,6 +57,12 @@ const applicationSchema = new mongoose.Schema(
       default: "",
     },
 
+    portfolio: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     resume: {
       type: String,
       required: true,
