@@ -222,7 +222,9 @@ export const getApplication = async (req, res, next) => {
             "AI / Machine Learning",
             "Cybersecurity",
             "Mobile App Development",
-            "Open Source"
+            "Open Source",
+            "HR",
+            "Graphics"
         ];
 
         if (!validDomains.includes(domain)) {
