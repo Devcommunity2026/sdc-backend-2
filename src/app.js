@@ -10,6 +10,7 @@ import editRoute from './routes/editContent.js'
 import modRoute from './routes/moderatorContent.js'
 import publicRoute from './routes/public.js'
 import alumniRoute from './routes/alumni.js'
+import certificateRoute from './routes/certificateRoutes.js'
 import bodyParser from 'body-parser'
 
 const app = express()
@@ -19,8 +20,11 @@ app.use(cors({
     origin: [
       process.env.FRONTEND_URL,
       process.env.LOCAL_FRONTEND_URL,
-      process.env.SDC_DOMAIN
-    ],
+      process.env.SDC_DOMAIN,
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:3000"
+    ].filter(Boolean),
     credentials: true
 }));
 
@@ -28,11 +32,9 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json())
 
-
 app.get('/test', (req, res) => {
     res.send('Test Passed')
-})// test Route to check Server status 
-
+}) // test Route to check Server status 
 
 app.use('/auth', authRoute) // Authentication route
 app.use('/profile', profileRoute) // profile route
@@ -42,9 +44,10 @@ app.use('/edit', editRoute) // edit content only moderator and admin can do that
 app.use('/mod', modRoute) // get details of the Admin/Moderator Page
 app.use('/public', publicRoute) // get details of the Admin/Moderator Page
 app.use('/alumni', alumniRoute) // alumni route
+app.use('/api/certificates', certificateRoute) // Certificate verification & publishing
+app.use('/certificates', certificateRoute) // Certificate backward-compat route
 
-
-// middleware which will handel Errors
+// middleware which will handle Errors
 app.use(errorHandler)
 
 export default app

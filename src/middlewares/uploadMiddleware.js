@@ -2,7 +2,6 @@ import cloudinary from '../config/cloudConfig.js'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
 import multer from 'multer'
 
-
 const imageStorage = new CloudinaryStorage({
     cloudinary,
     params: async (req, file) => {
@@ -70,3 +69,50 @@ export const resumeParser = multer({
         }
     }
 })
+
+// Memory storage for bulk spreadsheet processing & buffer upload
+const memoryStorage = multer.memoryStorage();
+
+export const uploadSingleExcel = multer({
+    storage: memoryStorage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB
+    },
+    fileFilter: (req, file, cb) => {
+        const isExcel =
+            file.mimetype.includes('spreadsheetml') ||
+            file.mimetype.includes('excel') ||
+            file.mimetype.includes('csv') ||
+            file.originalname.match(/\.(xlsx|xls|csv)$/i);
+        if (isExcel) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type. Only Excel (.xlsx, .xls) and CSV (.csv) files are permitted.'), false);
+        }
+    }
+}).single('file');
+
+export const validateExcelFile = (req, res, next) => {
+    if (!req.file || !req.file.buffer || req.file.buffer.length === 0) {
+        return res.status(400).json({
+            success: false,
+            message: 'Spreadsheet file is required (.xlsx or .csv).'
+        });
+    }
+    next();
+};
+
+export const uploadCertificatePdf = multer({
+    storage: memoryStorage,
+    limits: {
+        fileSize: 10 * 1024 * 1024
+    },
+    fileFilter: (req, file, cb) => {
+        const isPdf = file.mimetype === 'application/pdf' || file.originalname.toLowerCase().endsWith('.pdf');
+        if (isPdf) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only PDF files are permitted.'), false);
+        }
+    }
+}).single('file');
