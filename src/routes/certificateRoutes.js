@@ -8,6 +8,8 @@ import {
   getCertificateById,
   getCertificateQr,
   listCertificates,
+  updateCertificateStatus,
+  deleteCertificate,
 } from "../controllers/certificateController.js";
 import {
   uploadSingleExcel,
@@ -41,5 +43,11 @@ router.post("/generate-bulk", uploadSingleExcel, validateExcelFile, generateBulk
 
 // Upload custom pre-made PDF certificate
 router.post("/", uploadCertificatePdf, createCertificate);
+
+// Cancel or restore certificate validation status
+router.patch("/:id/status", updateCertificateStatus);
+
+// Permanently delete certificate
+router.delete("/:id", deleteCertificate);
 
 export default router;

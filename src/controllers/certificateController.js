@@ -576,6 +576,14 @@ export const getCertificateById = async (req, res, next) => {
       });
     }
 
+    if (certificate.status === "revoked") {
+      return res.status(403).json({
+        success: false,
+        revoked: true,
+        message: "This certificate's validation has been cancelled by the issuing authority.",
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Certificate verified successfully.",
@@ -670,6 +678,111 @@ export const listCertificates = async (req, res, next) => {
     });
   } catch (error) {
     const err = new errorClass(false, 500, "Unable to fetch certificates", "List certs failed", error);
+    next(err);
+  }
+};
+
+/**
+ * PATCH /api/certificates/:id/status
+ * Admin toggle/update of certificate validation status ("valid" | "revoked")
+ */
+export const updateCertificateStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body || {};
+
+    if (!id || !id.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Certificate ID parameter is required.",
+      });
+    }
+
+    const certificate = await Certificate.findOne({ certificateId: id.trim() });
+    if (!certificate) {
+      return res.status(404).json({
+        success: false,
+        message: "Certificate not found.",
+      });
+    }
+
+    let nextStatus;
+    if (status !== undefined) {
+      const normalized = String(status).trim().toLowerCase();
+      if (!["valid", "revoked"].includes(normalized)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Status must be either "valid" or "revoked".',
+        });
+      }
+      nextStatus = normalized;
+    } else {
+      nextStatus = certificate.status === "revoked" ? "valid" : "revoked";
+    }
+
+    certificate.status = nextStatus;
+    await certificate.save();
+
+    logger.info(`[Certificate Status] ${certificate.certificateId} set to "${nextStatus}"`);
+
+    return res.status(200).json({
+      success: true,
+      message:
+        nextStatus === "revoked"
+          ? `Validation cancelled for certificate ${certificate.certificateId}.`
+          : `Certificate ${certificate.certificateId} is now valid again.`,
+      data: {
+        certificateId: certificate.certificateId,
+        holderName: certificate.holderName,
+        status: certificate.status,
+      },
+    });
+  } catch (error) {
+    const err = new errorClass(false, 500, "Unable to update certificate status", "Update cert status failed", error);
+    next(err);
+  }
+};
+
+/**
+ * DELETE /api/certificates/:id
+ * Admin deletion of a certificate from MongoDB and Cloudinary
+ */
+export const deleteCertificate = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || !id.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Certificate ID parameter is required.",
+      });
+    }
+
+    const certificate = await Certificate.findOne({ certificateId: id.trim() });
+    if (!certificate) {
+      return res.status(404).json({
+        success: false,
+        message: "Certificate not found.",
+      });
+    }
+
+    if (certificate.cloudinaryPublicId) {
+      await deleteCloudinaryAsset(certificate.cloudinaryPublicId);
+    }
+
+    await Certificate.deleteOne({ _id: certificate._id });
+
+    logger.info(`[Certificate Deleted] ${certificate.certificateId} (${certificate.holderName})`);
+
+    return res.status(200).json({
+      success: true,
+      message: `Certificate ${certificate.certificateId} deleted successfully.`,
+      data: {
+        certificateId: certificate.certificateId,
+      },
+    });
+  } catch (error) {
+    const err = new errorClass(false, 500, "Unable to delete certificate", "Delete cert failed", error);
     next(err);
   }
 };
